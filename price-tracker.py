@@ -54,7 +54,7 @@ def send_email(item_name: str, message: str, email: str) -> bool:
     return True
 
 def main(args) -> None:
-    print(f"Loading items to track from '{args.items}'")
+    print(f"Loading items to track from '{args.items}' at {datetime.now()}")
 
     with open(args.items, 'r') as f:
         items = json.load(f)
@@ -78,17 +78,19 @@ def main(args) -> None:
             continue
         
         current_price = float(match.group(1))
+        print(f"    Price : {current_price}")
         
         if 'last_price' not in item or item['last_price'] > current_price:
             msg = f"New BEST price found for '{item['name']}' : {current_price} $"
-            print(f">> {msg}")
+            print(f">>> {msg}")
             if args.email is not None:
                 send_email(item['name'], msg, args.email)
             item['last_price'] = current_price
             item['last_price_timestamp'] = datetime.now().strftime("%s")
 
     
-    print("All items have been verified. Updating database..")
+    print("All items have been verified.")
+    print("Updating database..")
     with open(args.items, 'w') as f:
         json.dump(items, f, indent=2)
     print("All done")
