@@ -17,12 +17,12 @@ Example :
   {
     "name": "Dell 27 Inch 4K Monitor",
     "url": "https://www.dell.com/en-ca/shop/dell-27-4k-uhd-monitor-s2721qs/apd/210-axlg/monitors-monitor-accessories",
-    "regex": "<div class=\"ps-dell-price ps-simplified\" data-testid=sharedPSPDellPrice>CAD \\$([0-9]+\\.?[0-9]*)</div>"
+    "regex": "<div class=\"ps-dell-price ps-simplified\" data-testid=sharedPSPDellPrice>.*?CAD \\$([0-9]+\\.?[0-9]*).*?</div>"
   },
   {
     "name": "Item 2",
     "url": "Url/to/product/page",
-    "regex": "pattern/to/capture/price"
+    "regex": "pattern/to/capture/(price)"
   },
 ]
 ```
