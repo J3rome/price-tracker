@@ -15,6 +15,7 @@ EMAIL_API_KEY = os.environ.get("SEND_IN_BLUE_API_KEY", None)
 parser = argparse.ArgumentParser("Price tracker")
 parser.add_argument("-i", "--items", type=str, default=script_path/"items.json", help="Path to items.json")
 parser.add_argument("-e", "--email", type=str, default=None, help="Email address at which to send notification")
+parser.add_argument("-k", "--key_file", type=str, default=None, help="Path to file storing API key of SendInBlue email service")
 
 def log_error(msg: str) -> None:
     print(f"[ERROR] {msg}", file=sys.stderr)
@@ -86,6 +87,7 @@ def main(args) -> None:
             print(f">>> {msg}")
             if args.email is not None:
                 send_email(item['name'], msg, args.email)
+
             item['last_price'] = current_price
             item['last_price_timestamp'] = datetime.now().strftime("%s")
 
@@ -98,8 +100,16 @@ def main(args) -> None:
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    if args.email is not None and EMAIL_API_KEY is None and os.path.exists(script_path / "email.env"):
-        with open(script_path / "email.env", 'r') as f:
+    if args.email is not None and EMAIL_API_KEY is None:
+        if args.key_file is None:
+            args.key_file = script_path / "email.env"
+        
+        if not os.path.exists(args.key_file):
+            log_error("Can't load SendInBlue API key from file or environment variable.")
+            log_error("Either provide the API key or run without --email parameter")
+            exit(1)
+
+        with open(args.key_file, 'r') as f:
             EMAIL_API_KEY = f.read().strip().split("=")[-1]
 
     if not os.path.exists(args.items):
